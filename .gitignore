@@ -1,0 +1,16 @@
+# Docker artifacts
+*.tar
+docker-compose.override.yml
+
+# Environment files (root level)
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.suo
+*.swp
