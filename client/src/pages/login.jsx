@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import { apiUrl } from '../lib/network';
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -23,7 +24,7 @@ export default function Login() {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch('/api/auth/google', {
+      const res = await fetch(apiUrl('/auth/google'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ credential: response.credential }),

@@ -3,10 +3,9 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import VideoChat from '../components/videoChat';
 import TextChat from '../components/textChat';
+import { SERVER_ORIGIN, apiUrl } from '../lib/network';
 
-const SOCKET_SERVER_URL =
-  import.meta.env.VITE_SERVER_URL ||
-  (import.meta.env.DEV ? 'http://localhost:5000' : window.location.origin);
+const SOCKET_SERVER_URL = SERVER_ORIGIN;
 
 let msgIdCounter = 0;
 
@@ -103,7 +102,7 @@ export default function Chat() {
   };
 
   useEffect(() => {
-    fetch('/api/turn-config')
+    fetch(apiUrl('/turn-config'))
       .then((r) => r.json())
       .then((data) => { if (data.iceServers) iceServersRef.current = data.iceServers; })
       .catch(() => {
@@ -196,7 +195,7 @@ export default function Chat() {
     s.on('partner-typing', setPartnerTyping);
     s.on('reaction', ({ emoji, msgId }) =>
       setMessages((prev) =>
-        prev.map((m) => (m.remoteId === msgId ? { ...m, reaction: emoji } : m))
+        prev.map((m) => (m.sender === 'You' && m.id === msgId ? { ...m, reaction: emoji } : m))
       )
     );
 
@@ -344,7 +343,11 @@ export default function Chat() {
   };
 
   const sendReaction = (emoji, msgId) => {
-    socket.current?.emit('reaction', { emoji, msgId });
+    setMessages((prev) => {
+      const msg = prev.find((m) => m.id === msgId);
+      socket.current?.emit('reaction', { emoji, msgId: msg?.remoteId ?? msgId });
+      return prev.map((m) => (m.id === msgId ? { ...m, reaction: emoji } : m));
+    });
   };
 
   const sendReport = (reason) => {

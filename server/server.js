@@ -13,16 +13,20 @@ const { authLimiter } = require('./middleware/rateLimiter');
 const app = express();
 const server = http.createServer(app);
 
+const corsOptions = {
+  // Reflect the caller origin so the API still works when the frontend is
+  // deployed on a different host or port from the Express API.
+  origin: (_origin, callback) => callback(null, true),
+  methods: ['GET', 'POST'],
+};
+
 const io = new Server(server, {
-  cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
-    methods: ['GET', 'POST'],
-  },
+  cors: corsOptions,
   pingTimeout: 20000,
   pingInterval: 10000,
 });
 
-app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173' }));
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.get('/health', (req, res) =>

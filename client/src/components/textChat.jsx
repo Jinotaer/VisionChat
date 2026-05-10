@@ -31,13 +31,18 @@ export default function TextChat({
   const [showReport, setShowReport] = useState(false);
   const [reactionTarget, setReactionTarget] = useState(null);
   const bottomRef = useRef();
-  const clickTimerRef = useRef(null);
+  const longPressRef = useRef(null);
+  const hideTimerRef = useRef(null);
+  const isTouchRef = useRef(false);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, partnerTyping]);
 
-  useEffect(() => () => clearTimeout(clickTimerRef.current), []);
+  useEffect(() => () => {
+    clearTimeout(longPressRef.current);
+    clearTimeout(hideTimerRef.current);
+  }, []);
 
   const send = () => {
     if (!input.trim()) return;
@@ -50,17 +55,35 @@ export default function TextChat({
     onTyping?.();
   };
 
-  const handleMsgClick = (msgId, isPartner) => {
+  const showPicker = (msgId) => {
+    clearTimeout(hideTimerRef.current);
+    setReactionTarget(msgId);
+  };
+
+  const hidePickerSoon = () => {
+    clearTimeout(hideTimerRef.current);
+    hideTimerRef.current = setTimeout(() => setReactionTarget(null), 250);
+  };
+
+  const handleMouseEnter = (msgId, isPartner) => {
+    if (isTouchRef.current || !isPartner) return;
+    showPicker(msgId);
+  };
+
+  const handleMouseLeave = (isPartner) => {
+    if (isTouchRef.current || !isPartner) return;
+    hidePickerSoon();
+  };
+
+  const handleTouchStart = (msgId, isPartner) => {
     if (!isPartner) return;
-    if (clickTimerRef.current) {
-      clearTimeout(clickTimerRef.current);
-      clickTimerRef.current = null;
-      setReactionTarget((prev) => (prev === msgId ? null : msgId));
-    } else {
-      clickTimerRef.current = setTimeout(() => {
-        clickTimerRef.current = null;
-      }, 300);
-    }
+    isTouchRef.current = true;
+    clearTimeout(longPressRef.current);
+    longPressRef.current = setTimeout(() => showPicker(msgId), 500);
+  };
+
+  const cancelLongPress = () => {
+    clearTimeout(longPressRef.current);
   };
 
   const sendReaction = (emoji) => {
@@ -175,10 +198,15 @@ export default function TextChat({
             <div
               key={m.id}
               className={`relative flex max-w-[85%] flex-col ${isMe ? 'items-end self-end' : 'items-start'}`}
-              onClick={() => handleMsgClick(m.id, isPartner)}
+              onMouseEnter={() => handleMouseEnter(m.id, isPartner)}
+              onMouseLeave={() => handleMouseLeave(isPartner)}
+              onTouchStart={() => handleTouchStart(m.id, isPartner)}
+              onTouchEnd={cancelLongPress}
+              onTouchMove={cancelLongPress}
+              onTouchCancel={cancelLongPress}
             >
               <div
-                className={`p-3 text-sm leading-relaxed cursor-pointer select-none ${
+                className={`p-3 text-sm leading-relaxed select-none ${
                   isMe
                     ? 'rounded-[12px] rounded-tr-sm bg-blue-600 text-white shadow-sm'
                     : 'rounded-[12px] rounded-tl-sm border border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200'
@@ -192,7 +220,11 @@ export default function TextChat({
               <span className="mx-1 mt-1 text-[10px] text-slate-500 dark:text-slate-500">{m.time}</span>
 
               {reactionTarget === m.id && (
-                <div className={`absolute z-10 flex gap-1 rounded-full border border-slate-200 bg-white p-1.5 shadow-lg dark:border-slate-700 dark:bg-slate-800 ${isMe ? 'right-0 bottom-full mb-1' : 'left-0 bottom-full mb-1'}`}>
+                <div
+                  onMouseEnter={() => clearTimeout(hideTimerRef.current)}
+                  onMouseLeave={() => handleMouseLeave(isPartner)}
+                  className={`absolute z-10 flex gap-1 rounded-full border border-slate-200 bg-white p-1.5 shadow-lg dark:border-slate-700 dark:bg-slate-800 ${isMe ? 'right-0 bottom-full mb-1' : 'left-0 bottom-full mb-1'}`}
+                >
                   {QUICK_EMOJIS.map((e) => (
                     <button
                       key={e}
@@ -242,7 +274,7 @@ export default function TextChat({
         </div>
         {matched && (
           <p className="mt-1.5 text-center text-[10px] text-slate-400 dark:text-slate-500">
-            Double-tap a message to react
+            Hover or long-press a message to react
           </p>
         )}
       </div>
