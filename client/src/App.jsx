@@ -9,23 +9,18 @@ import Welcome from './pages/welcome';
 export default function App() {
   return (
     <ThemeProvider>
-    <BrowserRouter>
-      <Routes>
-
-        {/* Guest routes*/}
-        <Route element={<GuestLayout />}>
-          <Route path="/" element={<Login />} />
-          <Route path="/login" element={<Login />} />
-        </Route>
-
-        {/* Protected routes — requires login */}
-        <Route element={<UserLayout />}>
-          <Route path="/welcome" element={<Welcome />} />
-          <Route path="/chat" element={<Chat />} />
-        </Route>
-
-      </Routes>
-    </BrowserRouter>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<GuestLayout />}>
+            <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
+          </Route>
+          <Route element={<UserLayout />}>
+            <Route path="/welcome" element={<Welcome />} />
+            <Route path="/chat" element={<Chat />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </ThemeProvider>
   );
 }

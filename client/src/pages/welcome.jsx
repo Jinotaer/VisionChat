@@ -193,24 +193,30 @@ export default function Welcome() {
                   </div>
                 </div>
 
-                {/* Voice-only toggle */}
+                {/* Mode toggle */}
                 <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-600 dark:bg-slate-700">
                   <div className="flex items-center gap-3">
                     <span className="material-symbols-outlined text-slate-500 dark:text-slate-400">
                       {voiceOnly ? 'mic' : 'videocam'}
                     </span>
                     <div className="text-left">
-                      <p className="text-sm font-semibold text-slate-900 dark:text-white">Voice only mode</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">Audio chat without camera</p>
+                      <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                        {voiceOnly ? 'Voice only' : 'Video + Audio'}
+                      </p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                        {voiceOnly ? 'Audio chat without camera' : 'Camera and mic enabled'}
+                      </p>
                     </div>
                   </div>
                   <button
                     type="button"
+                    role="switch"
+                    aria-checked={!voiceOnly}
                     onClick={() => setVoiceOnly((v) => !v)}
-                    className={`relative h-6 w-11 rounded-full transition-colors ${voiceOnly ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-600'}`}
+                    className={`inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ${!voiceOnly ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-600'}`}
                   >
                     <span
-                      className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${voiceOnly ? 'translate-x-5' : 'translate-x-0.5'}`}
+                      className={`h-5 w-5 rounded-full bg-white shadow-lg transition-transform duration-200 ${!voiceOnly ? 'translate-x-5' : 'translate-x-0'}`}
                     />
                   </button>
                 </div>
