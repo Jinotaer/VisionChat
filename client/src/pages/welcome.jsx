@@ -75,7 +75,7 @@ export default function Welcome() {
       </div>
 
       <main className="relative flex flex-1 items-center justify-center px-6 py-12">
-        <section className="w-full max-w-xl">
+        <section className="w-full max-w-lg">
           <div className="flex flex-col items-center gap-8 text-center">
 
             {/* Avatar */}
@@ -123,7 +123,7 @@ export default function Welcome() {
                       onChange={(e) => setDisplayName(e.target.value)}
                       maxLength={50}
                       placeholder="How should strangers see you?"
-                      className="h-14 w-full rounded-2xl border border-slate-300 bg-slate-50 py-3 pl-12 pr-4 text-base text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:placeholder:text-slate-500 dark:focus:bg-slate-700"
+                      className="h-12 w-full rounded-xl border border-slate-300 bg-slate-50 py-3 pl-12 pr-4 text-base text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:placeholder:text-slate-500 dark:focus:bg-slate-700"
                     />
                   </div>
                 </div>
@@ -138,7 +138,7 @@ export default function Welcome() {
                         id="gender"
                         value={gender}
                         onChange={(e) => setGender(e.target.value)}
-                        className="h-14 w-full appearance-none rounded-2xl border border-slate-300 bg-slate-50 py-3 pl-12 pr-10 text-base text-slate-900 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:focus:bg-slate-700"
+                        className="h-12 w-full appearance-none rounded-xl border border-slate-300 bg-slate-50 py-3 pl-12 pr-10 text-base text-slate-900 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:focus:bg-slate-700"
                       >
                         {GENDER_OPTIONS.map((o) => (
                           <option key={o.value} value={o.value}>{o.label}</option>
@@ -156,7 +156,7 @@ export default function Welcome() {
                         id="lookingFor"
                         value={lookingFor}
                         onChange={(e) => setLookingFor(e.target.value)}
-                        className="h-14 w-full appearance-none rounded-2xl border border-slate-300 bg-slate-50 py-3 pl-12 pr-10 text-base text-slate-900 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:focus:bg-slate-700"
+                        className="h-12 w-full appearance-none rounded-xl border border-slate-300 bg-slate-50 py-3 pl-12 pr-10 text-base text-slate-900 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:focus:bg-slate-700"
                       >
                         {LOOKING_FOR_OPTIONS.map((o) => (
                           <option key={o.value} value={o.value}>{o.label}</option>
@@ -194,7 +194,7 @@ export default function Welcome() {
                 </div>
 
                 {/* Mode toggle */}
-                <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-600 dark:bg-slate-700">
+                <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-600 dark:bg-slate-700">
                   <div className="flex items-center gap-3">
                     <span className="material-symbols-outlined text-slate-500 dark:text-slate-400">
                       {voiceOnly ? 'mic' : 'videocam'}
@@ -226,7 +226,7 @@ export default function Welcome() {
                 <button
                   onClick={handleStart}
                   disabled={!displayName.trim()}
-                  className="flex w-full items-center justify-center gap-3 rounded-2xl bg-blue-600 px-6 py-4 text-base font-semibold text-white shadow-[0_10px_24px_rgba(37,99,235,0.24)] transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-12 w-full items-center justify-center gap-3 rounded-xl bg-blue-600 px-6 py-4 text-base font-semibold text-white shadow-[0_10px_24px_rgba(37,99,235,0.24)] transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
                   type="button"
                 >
                   <span className="material-symbols-outlined">{voiceOnly ? 'mic' : 'videocam'}</span>
@@ -235,7 +235,7 @@ export default function Welcome() {
 
                 <button
                   onClick={handleLogout}
-                  className="flex w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-6 py-4 text-base font-semibold text-slate-600 transition hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
+                  className="flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-6 py-4 text-base font-semibold text-slate-600 transition hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
                   type="button"
                 >
                   <span className="material-symbols-outlined">logout</span>

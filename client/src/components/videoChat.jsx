@@ -66,6 +66,7 @@ export default function VideoChat({
   const remoteRef = useRef();
   const [micOn, setMicOn] = useState(true);
   const [camOn, setCamOn] = useState(true);
+  const [showMobileControls, setShowMobileControls] = useState(false);
 
   useEffect(() => {
     if (localSmRef.current) localSmRef.current.srcObject = localStream ?? null;
@@ -201,11 +202,27 @@ export default function VideoChat({
         <div className="hidden md:block absolute bottom-3 right-3 z-20">
           {controls(false)}
         </div>
-      </div>
 
-      {/* Mobile: controls below video, not overlapping */}
-      <div className="flex md:hidden justify-center">
-        {controls(false)}
+        {/* Mobile: single toggle → expanded controls */}
+        <div className="md:hidden absolute bottom-2 right-2 z-20">
+          {showMobileControls ? (
+            <div className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/92 p-1.5 shadow-[0_12px_28px_rgba(15,23,42,0.16)] backdrop-blur-md dark:border-slate-700 dark:bg-slate-800/90">
+              <ControlBtn onClick={toggleMic} active={!micOn} label={micOn ? 'Mute' : 'Unmute'} icon={micOn ? 'mic' : 'mic_off'} size={9} />
+              {!voiceOnly && <ControlBtn onClick={toggleCam} active={!camOn} label={camOn ? 'Camera off' : 'Camera on'} icon={camOn ? 'videocam' : 'videocam_off'} size={9} />}
+              {!voiceOnly && onToggleBlur && <ControlBtn onClick={onToggleBlur} active={blurOn} activeColor="bg-blue-100 text-blue-700 hover:bg-blue-200" label={blurOn ? 'Disable blur' : 'Blur background'} icon="blur_on" size={9} />}
+              {onToggleScreenShare && <ControlBtn onClick={onToggleScreenShare} active={isScreenSharing} activeColor="bg-blue-100 text-blue-700 hover:bg-blue-200" label={isScreenSharing ? 'Stop sharing' : 'Share screen'} icon={isScreenSharing ? 'cancel_presentation' : 'present_to_all'} size={9} />}
+              <ControlBtn onClick={() => setShowMobileControls(false)} active={false} label="Close" icon="close" size={9} />
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowMobileControls(true)}
+              aria-label="Show controls"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/92 text-slate-700 shadow-[0_12px_28px_rgba(15,23,42,0.16)] backdrop-blur-md dark:bg-slate-800/90 dark:text-slate-200"
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 20 }}>tune</span>
+            </button>
+          )}
+        </div>
       </div>
 
     </div>
