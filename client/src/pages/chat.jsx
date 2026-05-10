@@ -36,13 +36,13 @@ function createBlurredStream(sourceStream) {
 
   let animFrame;
   const draw = () => {
-    if (tmpVideo.readyState >= 2) {
-      ctx.filter = 'blur(16px)';
-      ctx.drawImage(tmpVideo, -24, -24, canvas.width + 48, canvas.height + 48);
-    }
+    ctx.filter = 'blur(16px)';
+    ctx.drawImage(tmpVideo, -24, -24, canvas.width + 48, canvas.height + 48);
     animFrame = requestAnimationFrame(draw);
   };
-  draw();
+
+  // Start the loop only once the video has data — avoids burning RAF cycles on blank frames
+  tmpVideo.addEventListener('canplay', () => { animFrame = requestAnimationFrame(draw); }, { once: true });
 
   return {
     stream: canvas.captureStream(30),
@@ -67,7 +67,7 @@ export default function Chat() {
   const [partnerTyping, setPartnerTyping] = useState(false);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [blurOn, setBlurOn] = useState(false);
-  const [quality, setQuality] = useState(null); // 'excellent' | 'good' | 'poor'
+  const [quality, setQuality] = useState(null);
   const [reconnecting, setReconnecting] = useState(false);
 
   const pc = useRef(null);
@@ -82,6 +82,7 @@ export default function Chat() {
   const isTypingRef = useRef(false);
   const typingTimerRef = useRef(null);
   const qualityTimerRef = useRef(null);
+  const toggleScreenShareRef = useRef(null);
 
   const auth = JSON.parse(localStorage.getItem('auth') || '{}');
   const displayName = auth.name || 'User';
@@ -92,6 +93,14 @@ export default function Chat() {
 
   const addMessage = (sender, text, extra = {}) =>
     setMessages((prev) => [...prev, { id: ++msgIdCounter, sender, text, time: timestamp(), ...extra }]);
+
+  const teardown = () => {
+    pc.current?.close();
+    socket.current?.disconnect();
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    screenStreamRef.current?.getTracks().forEach((t) => t.stop());
+    blurHandleRef.current?.stop();
+  };
 
   useEffect(() => {
     fetch('/api/turn-config')
@@ -114,7 +123,7 @@ export default function Chat() {
       if (!pc.current) return;
       try {
         const stats = await pc.current.getStats();
-        stats.forEach((r) => {
+        for (const r of stats.values()) {
           if (r.type === 'inbound-rtp' && r.kind === 'video') {
             const total = (r.packetsReceived || 0) + (r.packetsLost || 0);
             const loss = total > 0 ? r.packetsLost / total : 0;
@@ -122,8 +131,9 @@ export default function Chat() {
             if (loss < 0.02 && jitter < 0.03) setQuality('excellent');
             else if (loss < 0.1 && jitter < 0.1) setQuality('good');
             else setQuality('poor');
+            break;
           }
-        });
+        }
       } catch {}
     }, 3000);
     return () => clearInterval(qualityTimerRef.current);
@@ -263,10 +273,14 @@ export default function Chat() {
         setLocalStream(screen);
         const sender = pc.current?.getSenders().find((s) => s.track?.kind === 'video');
         sender?.replaceTrack(screen.getVideoTracks()[0]);
-        screen.getVideoTracks()[0].onended = () => toggleScreenShare();
+        // Use ref so onended always calls the latest version, not a stale closure
+        screen.getVideoTracks()[0].onended = () => toggleScreenShareRef.current?.();
       } catch {}
     }
   }, [isScreenSharing, blurHandleRef, streamRef, pc]);
+
+  // Keep ref in sync so onended never calls a stale version
+  toggleScreenShareRef.current = toggleScreenShare;
 
   const toggleBlur = useCallback(() => {
     if (blurOn) {
@@ -306,20 +320,12 @@ export default function Chat() {
   }, [location.state]);
 
   const handleStop = () => {
-    pc.current?.close();
-    socket.current?.disconnect();
-    streamRef.current?.getTracks().forEach((t) => t.stop());
-    screenStreamRef.current?.getTracks().forEach((t) => t.stop());
-    blurHandleRef.current?.stop();
+    teardown();
     navigate('/welcome');
   };
 
   const handleLogout = () => {
-    pc.current?.close();
-    socket.current?.disconnect();
-    streamRef.current?.getTracks().forEach((t) => t.stop());
-    screenStreamRef.current?.getTracks().forEach((t) => t.stop());
-    blurHandleRef.current?.stop();
+    teardown();
     localStorage.removeItem('auth');
     localStorage.removeItem('gender');
     localStorage.removeItem('lookingFor');

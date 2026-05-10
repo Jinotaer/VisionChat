@@ -37,6 +37,8 @@ export default function TextChat({
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, partnerTyping]);
 
+  useEffect(() => () => clearTimeout(clickTimerRef.current), []);
+
   const send = () => {
     if (!input.trim()) return;
     onSend(input.trim());
@@ -74,7 +76,7 @@ export default function TextChat({
   };
 
   return (
-    <aside className="flex h-[60vh] w-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0px_4px_16px_rgba(0,0,0,0.08)] dark:border-slate-700 dark:bg-slate-800 md:h-full md:flex-none md:w-80 lg:w-96">
+    <aside className="relative flex h-[60vh] w-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0px_4px_16px_rgba(0,0,0,0.08)] dark:border-slate-700 dark:bg-slate-800 md:h-full md:flex-none md:w-80 lg:w-96">
 
       {/* Header */}
       <div className="flex min-w-0 flex-none items-center justify-between gap-2 border-b border-slate-200 bg-white px-4 py-3 dark:border-slate-700 dark:bg-slate-800">
