@@ -105,7 +105,7 @@ export default function VideoChat({
     <div className="flex w-full min-w-0 flex-col gap-2 md:flex-1">
 
       {/* Main video — remote */}
-      <section className="relative h-[50vh] overflow-hidden rounded-xl border border-slate-200 bg-black shadow-[0_24px_60px_rgba(15,23,42,0.12)] dark:border-slate-700 md:h-full md:flex-1 md:min-h-[420px]">
+      <section className="relative h-[50vw] overflow-hidden rounded-xl border border-slate-200 bg-black shadow-[0_24px_60px_rgba(15,23,42,0.12)] dark:border-slate-700 md:h-auto md:flex-1 md:min-h-0 lg:min-h-105">
         {remoteStream ? (
           <video ref={remoteRef} autoPlay playsInline className="absolute inset-0 h-full w-full object-cover" />
         ) : (
@@ -115,7 +115,7 @@ export default function VideoChat({
             <div className="relative flex h-full w-full flex-col items-center justify-center px-6 text-center">
               {cameraError ? (
                 <>
-                  <div className="mb-5 flex h-24 w-24 items-center justify-center rounded-[28px] border border-red-100 bg-white/90 shadow-[0_16px_40px_rgba(239,68,68,0.12)] backdrop-blur-sm dark:bg-slate-800/90">
+                  <div className="mb-5 flex h-24 w-24 items-center justify-center rounded-[28px] border border-red-100 bg-white/90 shadow-[0_16px_40px_rgba(239,68,68,0.12)] backdrop-blur-sm dark:bg-slate-800/90 sm:mt-5">
                     <span className="material-symbols-outlined text-[48px] text-red-500">videocam_off</span>
                   </div>
                   <h3 className="mt-2 text-[1.4rem] font-semibold tracking-[-0.04em] text-slate-900 dark:text-white">Camera unavailable</h3>
@@ -130,8 +130,8 @@ export default function VideoChat({
                 </>
               ) : (
                 <>
-                  <div className="mb-5 flex h-24 w-24 items-center justify-center rounded-[28px] border border-blue-100 bg-white/90 shadow-[0_16px_40px_rgba(59,130,246,0.12)] backdrop-blur-sm dark:bg-slate-800/90">
-                    <span className="material-symbols-outlined text-[48px] text-blue-600">
+                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-[20px] border border-blue-100 bg-white/90 shadow-[0_16px_40px_rgba(59,130,246,0.12)] backdrop-blur-sm dark:bg-slate-800/90 md:mb-5 md:h-24 md:w-24 md:rounded-[28px]">
+                    <span className="material-symbols-outlined text-[32px] text-blue-600 md:text-[48px]">
                       {voiceOnly ? 'mic' : 'person'}
                     </span>
                   </div>
@@ -139,10 +139,10 @@ export default function VideoChat({
                     <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.45)]" />
                     Searching
                   </div>
-                  <h3 className="mt-5 text-[1.6rem] font-semibold tracking-[-0.04em] text-slate-900 dark:text-white sm:text-[1.85rem]">
+                  <h3 className="mt-3 text-[1.1rem] font-semibold tracking-[-0.04em] text-slate-900 dark:text-white md:mt-5 md:text-[1.6rem]">
                     Waiting for a stranger
                   </h3>
-                  <p className="mt-3 max-w-md text-sm leading-7 text-slate-600 dark:text-slate-400 sm:text-base">
+                  <p className="mt-2 hidden max-w-md text-sm leading-7 text-slate-600 dark:text-slate-400 md:block">
                     When someone joins, {voiceOnly ? "you'll be connected by voice." : 'their video will appear here.'}
                   </p>
                 </>
@@ -165,7 +165,7 @@ export default function VideoChat({
         )}
 
         {!voiceOnly && (
-          <div className="hidden lg:block absolute right-5 top-5 z-20 aspect-3/4 w-36 overflow-hidden rounded-2xl border border-white/70 bg-black shadow-[0_18px_40px_rgba(15,23,42,0.18)]">
+          <div className="hidden lg:block absolute right-5 top-5 z-20 aspect-video w-52 overflow-hidden rounded-2xl border border-white/70 bg-black shadow-[0_18px_40px_rgba(15,23,42,0.18)]">
             <video ref={localPiPRef} autoPlay playsInline muted className={`h-full w-full scale-x-[-1] object-cover ${localStream && camOn ? '' : 'invisible'}`} />
             {(!localStream || !camOn) && <CamOffPlaceholder size={28} />}
             <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-900/70 to-transparent px-3 pb-3 pt-7">
@@ -180,7 +180,7 @@ export default function VideoChat({
       </section>
 
       {/* Local preview — small + tablet */}
-      <div className="lg:hidden relative h-48 overflow-hidden rounded-xl border border-slate-200 bg-black shadow-[0_4px_16px_rgba(15,23,42,0.10)] dark:border-slate-700">
+      <div className="lg:hidden relative h-48 md:h-auto md:flex-1 overflow-hidden rounded-xl border border-slate-200 bg-black shadow-[0_4px_16px_rgba(15,23,42,0.10)] dark:border-slate-700">
         {voiceOnly ? (
           <div className="flex h-full w-full items-center justify-center bg-slate-900">
             <div className="flex flex-col items-center gap-2">
@@ -197,9 +197,15 @@ export default function VideoChat({
         <div className="pointer-events-none absolute left-3 bottom-2">
           <span className="rounded-full border border-white/40 bg-white/20 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.12em] text-white">You</span>
         </div>
-        <div className="absolute right-3 top-1/2 z-20 -translate-y-1/2">
+        {/* Tablet: controls inside video */}
+        <div className="hidden md:block absolute bottom-3 right-3 z-20">
           {controls(false)}
         </div>
+      </div>
+
+      {/* Mobile: controls below video, not overlapping */}
+      <div className="flex md:hidden justify-center">
+        {controls(false)}
       </div>
 
     </div>
