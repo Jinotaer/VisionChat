@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from './context/ThemeContext';
 import UserLayout from './layouts/userLayouts';
 import GuestLayout from './layouts/guestLayout';
 import Login from './pages/login';
@@ -7,6 +8,7 @@ import Welcome from './pages/welcome';
 
 export default function App() {
   return (
+    <ThemeProvider>
     <BrowserRouter>
       <Routes>
 
@@ -24,5 +26,6 @@ export default function App() {
 
       </Routes>
     </BrowserRouter>
+    </ThemeProvider>
   );
 }

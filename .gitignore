@@ -2,8 +2,9 @@
 *.tar
 docker-compose.override.yml
 
-# Environment files (root level)
+# Environment files
 .env
+.env.local
 
 # OS
 .DS_Store

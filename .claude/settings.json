@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem -Path \"c:\\\\Users\\\\Ajabb\\\\OneDrive\\\\Desktop\\\\Projects\\\\chat\\\\server\" -Recurse -Force | Where-Object {-not $_.PSIsContainer} | Select-Object FullName)",
+      "Bash(Remove-Item \"c:\\\\Users\\\\Ajabb\\\\OneDrive\\\\Desktop\\\\Projects\\\\chat\\\\server\\\\package-lock.json\")",
+      "Bash(git restore *)"
+    ]
+  }
+}
